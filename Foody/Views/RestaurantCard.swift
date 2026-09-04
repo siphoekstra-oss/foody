@@ -125,6 +125,7 @@ struct EmptyDayNotice: View {
                         store.query.day = nextDay
                     }
                     .font(.subheadline)
+                    .multilineTextAlignment(.leading)
                 } else {
                     Text("Ook niets in de komende weken")
                         .font(.subheadline)
@@ -163,6 +164,7 @@ struct DayLevelNotice: View {
                 if let url = BookingLink.url(for: restaurant, day: store.query.day, slot: nil, covers: store.query.covers) {
                     Button("Naar reserveringspagina") { openURL(url) }
                         .font(.subheadline)
+                        .multilineTextAlignment(.leading)
                 }
             }
         }
@@ -188,6 +190,7 @@ struct StatusNotice: View {
                 if let link {
                     Button(linkTitle) { openURL(link) }
                         .font(.subheadline)
+                        .multilineTextAlignment(.leading)
                 }
             }
         }

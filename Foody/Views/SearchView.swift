@@ -55,17 +55,17 @@ struct SearchControls: View {
     var body: some View {
         @Bindable var store = store
         VStack(spacing: 12) {
-            HStack {
-                DatePicker("Datum", selection: $store.query.day, in: selectableDays, displayedComponents: .date)
-                    .labelsHidden()
-                    .environment(\.timeZone, AmsterdamTime.timeZone)
-                Spacer()
-                Stepper(value: $store.query.covers, in: 1...8) {
-                    Label("\(store.query.covers)", systemImage: "person.2")
-                        .monospacedDigit()
-                        .accessibilityLabel("\(store.query.covers) personen")
+            // Naast elkaar als het past, bij grote tekst onder elkaar.
+            ViewThatFits(in: .horizontal) {
+                HStack {
+                    datePicker
+                    Spacer()
+                    coversStepper
                 }
-                .fixedSize()
+                VStack(alignment: .leading, spacing: 12) {
+                    datePicker
+                    coversStepper
+                }
             }
             Picker("Dagdeel", selection: $store.query.service) {
                 Text("Middag").tag(Service.lunch)
@@ -76,6 +76,23 @@ struct SearchControls: View {
         .padding(.horizontal)
         .padding(.vertical, 12)
         .background(.bar)
+    }
+
+    private var datePicker: some View {
+        @Bindable var store = store
+        return DatePicker("Datum", selection: $store.query.day, in: selectableDays, displayedComponents: .date)
+            .labelsHidden()
+            .environment(\.timeZone, AmsterdamTime.timeZone)
+    }
+
+    private var coversStepper: some View {
+        @Bindable var store = store
+        return Stepper(value: $store.query.covers, in: 1...8) {
+            Label("\(store.query.covers)", systemImage: "person.2")
+                .monospacedDigit()
+                .accessibilityLabel("\(store.query.covers) personen")
+        }
+        .fixedSize()
     }
 }
 
