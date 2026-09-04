@@ -1,32 +1,16 @@
-//
-//  FoodyApp.swift
-//  Foody
-//
-//  Created by Sip Hoekstra on 04/09/2026.
-//
-
 import SwiftUI
-import SwiftData
 
 @main
 struct FoodyApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
+    @State private var store = AvailabilityStore(loader: BundleAvailabilityLoader(), query: .default())
+    @State private var location = LocationService()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SearchView()
+                .environment(store)
+                .environment(location)
+                .environment(\.locale, DutchFormat.locale)
         }
-        .modelContainer(sharedModelContainer)
     }
 }

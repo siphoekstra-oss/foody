@@ -1,0 +1,14 @@
+# Xcode
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+*.xcresult
+
+# macOS
+.DS_Store
+
+# Crawler
+crawler/.cache/
+crawler/__pycache__/
+**/__pycache__/
