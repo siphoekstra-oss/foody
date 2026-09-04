@@ -8,6 +8,7 @@ struct RestaurantRoute: Hashable {
 struct SearchView: View {
     @Environment(AvailabilityStore.self) private var store
     @Environment(LocationService.self) private var location
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack {
@@ -31,6 +32,12 @@ struct SearchView: View {
         }
         .onChange(of: location.coordinate, initial: true) {
             store.userLocation = location.effectiveCoordinate
+        }
+        .onChange(of: scenePhase) { _, phase in
+            // Terug in de voorgrond: opnieuw ophalen, zodat de lijst nooit stil veroudert.
+            if phase == .active, store.document != nil {
+                Task { await store.load() }
+            }
         }
     }
 }

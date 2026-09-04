@@ -9,6 +9,10 @@ final class AvailabilityStore {
     /// Leesbare melding voor de gebruiker als laden of lezen mislukt.
     private(set) var loadError: String?
     private(set) var isLoading = false
+    /// Waar de getoonde data vandaan komt; `nil` zolang er niets geladen is.
+    private(set) var origin: AvailabilityOrigin?
+    /// Verversen via het netwerk mislukte; de getoonde data is ouder (cache of bundel).
+    private(set) var refreshError: String?
 
     var query: SearchQuery
     var sort: ResultSort = .distance
@@ -39,8 +43,10 @@ final class AvailabilityStore {
         isLoading = true
         defer { isLoading = false }
         do {
-            let data = try await loader.load()
-            document = try AvailabilityDecoder.decode(data)
+            let loaded = try await loader.load()
+            document = try AvailabilityDecoder.decode(loaded.data)
+            origin = loaded.origin
+            refreshError = loaded.refreshError
             loadError = nil
         } catch let error as AvailabilityDecodingError {
             loadError = error.errorDescription

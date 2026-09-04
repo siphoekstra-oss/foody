@@ -23,11 +23,12 @@ struct ResultsList: View {
             }
             .padding()
         }
+        .refreshable { await store.load() }
         .background(Color(.systemGroupedBackground))
     }
 }
 
-/// Altijd zichtbaar boven de lijst: laatste verversing en locatie-fallback.
+/// Altijd zichtbaar boven de lijst: laatste verversing, herkomst bij een verversfout, locatie-fallback.
 struct DataStatusBar: View {
     @Environment(AvailabilityStore.self) private var store
     @Environment(LocationService.self) private var location
@@ -36,6 +37,12 @@ struct DataStatusBar: View {
         VStack(alignment: .leading, spacing: 6) {
             if let document = store.document {
                 freshnessLine(generatedAt: document.generatedAt)
+            }
+            if let refreshError = store.refreshError {
+                Label("\(refreshError). Je ziet \(store.origin == .cache ? "de laatst opgehaalde" : "de meegeleverde") gegevens.",
+                      systemImage: "wifi.exclamationmark")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
             }
             if location.isUsingFallback {
                 Label(location.isDenied ? "Locatie geweigerd, afstand vanaf \(LocationService.fallbackLabel)"

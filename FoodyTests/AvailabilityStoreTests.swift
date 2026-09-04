@@ -6,9 +6,9 @@ struct StubLoader: AvailabilityLoading {
     struct Failure: Error {}
     var data: Data?
 
-    func load() async throws -> Data {
+    func load() async throws -> LoadedAvailability {
         guard let data else { throw Failure() }
-        return data
+        return LoadedAvailability(data: data, origin: .bundle, refreshError: nil)
     }
 }
 
@@ -74,6 +74,18 @@ struct AvailabilityStoreTests {
 
         #expect(store.isStale(now: generated.addingTimeInterval(2 * 3600)))
         #expect(!store.isStale(now: generated.addingTimeInterval(10 * 60)))
+    }
+
+    @Test func storeExposesOriginAndRefreshError() async {
+        struct CacheLoader: AvailabilityLoading {
+            let data: Data
+            func load() async throws -> LoadedAvailability { LoadedAvailability(data: data, origin: .cache, refreshError: "Geen verbinding") }
+        }
+        let store = AvailabilityStore(loader: CacheLoader(data: fixtureData), query: query)
+        await store.load()
+        #expect(store.origin == .cache)
+        #expect(store.refreshError == "Geen verbinding")
+        #expect(store.document != nil)
     }
 
     @Test func looksUpRestaurantById() async {

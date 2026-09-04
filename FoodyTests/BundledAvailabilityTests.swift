@@ -7,7 +7,7 @@ import Testing
 @MainActor
 struct BundledAvailabilityTests {
     private func loadBundled() async throws -> AvailabilityDocument {
-        let data = try await BundleAvailabilityLoader(bundle: .main).load()
+        let data = try await BundleAvailabilityLoader(bundle: .main).load().data
         return try AvailabilityDecoder.decode(data)
     }
 
