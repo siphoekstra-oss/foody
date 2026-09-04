@@ -4,13 +4,20 @@ struct DayAvailability: Codable, Equatable, Sendable {
     /// Begin van de dag in Europe/Amsterdam.
     var date: Date
     var slots: [Slot]
+    /// Dagdelen waarvoor het systeem wél "vrij" meldt maar geen tijden geeft (bijv. Guestplan).
+    /// Leeg als de tijdsloten het volledige beeld zijn.
+    var servicesAvailable: [Service]
 
-    init(date: Date, slots: [Slot]) {
+    init(date: Date, slots: [Slot], servicesAvailable: [Service] = []) {
         self.date = date
         self.slots = slots
+        self.servicesAvailable = servicesAvailable
     }
 
-    enum CodingKeys: String, CodingKey { case date, slots }
+    enum CodingKeys: String, CodingKey {
+        case date, slots
+        case servicesAvailable = "services_available"
+    }
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -20,12 +27,14 @@ struct DayAvailability: Codable, Equatable, Sendable {
         }
         date = day
         slots = try c.decode([Slot].self, forKey: .slots)
+        servicesAvailable = try c.decodeIfPresent([Service].self, forKey: .servicesAvailable) ?? []
     }
 
     func encode(to encoder: Encoder) throws {
         var c = encoder.container(keyedBy: CodingKeys.self)
         try c.encode(AmsterdamTime.isoDate(from: date), forKey: .date)
         try c.encode(slots, forKey: .slots)
+        if !servicesAvailable.isEmpty { try c.encode(servicesAvailable, forKey: .servicesAvailable) }
     }
 }
 

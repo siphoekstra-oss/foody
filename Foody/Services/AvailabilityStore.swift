@@ -26,9 +26,6 @@ final class AvailabilityStore {
         return ResultRanking.results(from: document.restaurants, query: query, userLocation: userLocation, sort: sort)
     }
 
-    /// Nepdata uit de bundel (M0). De UI toont hiervoor een badge.
-    var isFixtureData: Bool { document?.source == "fixture" }
-
     func isStale(now: Date = Date()) -> Bool {
         guard let document else { return false }
         return Freshness.isStale(document.generatedAt, now: now)

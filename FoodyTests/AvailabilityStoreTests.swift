@@ -67,12 +67,6 @@ struct AvailabilityStoreTests {
         #expect(store.results.first?.nextAvailableDay == nil)
     }
 
-    @Test func fixtureSourceIsFlagged() async {
-        let store = AvailabilityStore(loader: StubLoader(data: fixtureData), query: query)
-        await store.load()
-        #expect(store.isFixtureData)
-    }
-
     @Test func documentOlderThanAnHourIsStale() async throws {
         let store = AvailabilityStore(loader: StubLoader(data: fixtureData), query: query)
         await store.load()

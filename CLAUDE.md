@@ -264,3 +264,15 @@ Doe nu, in deze volgorde:
 4. Sluit af met: wat je gebouwd hebt, wat je bewust niet gebouwd hebt, en de eerste drie dingen die ik zelf moet controleren op mijn telefoon.
 
 Voor de 40 restaurants: gebruik uitsluitend de lijst die ik in M-1 zelf heb ingevuld. Verzin geen namen, geen adressen en vooral **geen boekings-URL's** — een verzonnen reserveerlink is erger dan geen link, want die faalt pas als een gebruiker erop tikt. Ontbreekt een veld, zet dan `null` en meld het. Verzin wél de tijdsloten: die zijn in M0 expliciet nep, zichtbaar via een debug-badge die in M1 verdwijnt.
+
+---
+## 9. Afwijkingen en aanvullingen (besloten op 2026-09-04)
+
+Vastgelegd zodat elke sessie dezelfde uitgangspunten heeft.
+
+- **Regio M0 is Den Bosch, Vught en Boxtel**, niet Amsterdam. Fallback-locatie is de Markt in 's-Hertogenbosch (51.6886843, 5.3036562). Amsterdam wordt de eerste uitbreiding in M4.
+- **Geen nepdata.** M0 draait op een echte crawler-snapshot in de bundel (`source: "crawler"`); de M2-crawler is naar voren gehaald. De debug-badge uit M0 bestaat daarom niet.
+- **Contract v1, aanvullingen:** `phone` (E.164, nullable) per restaurant; `source` op documentniveau; per dag optioneel `services_available: ["lunch"|"dinner"]` voor systemen die alleen op dag-niveau "vrij" melden zonder tijden. De app toont dat als "Vrij in de avond, kies je tijd op de reserveringspagina". Een status die de app niet kent, wordt `unknown`.
+- **Providers in deze regio:** Zenchef (Brasserie 155, L'Seven) geeft met één leesverzoek per restaurant alle tijdsloten met mogelijke gezelschapsgroottes; deeplinks met `rid`, `pax` en `day` zijn in de browser gecontroleerd. Guestplan (Tante Pietje, CoCo73) geeft per maand alleen dag-niveau per dienst en per dag alleen tijden voor één gezelschapsgrootte. Standaard halen we bij Guestplan alleen dag-niveau op (één verzoek per maand); `provider_meta.detail_days` zet tijdsloten voor de eerste dagen aan tegen één extra verzoek per dag. De publieke Guestplan-pagina is `https://widget.guestplan.com/?i=<accessKey>&partySize={covers}`; een datumparameter is daar niet geverifieerd.
+- **robots.txt:** `widget.guestplan.com` verbiedt alle bots en wordt niet aangeroepen; `bookings.zenchef.com` verbiedt alleen genoemde bots; de API-hosts publiceren geen robots.txt. De crawler controleert dit per host bij elke run.
+- **Bouwen:** `scripts/build.sh` en `scripts/test.sh` kiezen automatisch een iPhone-simulator (`FOODY_SIMULATOR` overschrijft). Swift 6-taalmodus met `nonisolated` als standaard-isolatie; iOS 17.0; alleen iPhone.

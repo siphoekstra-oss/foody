@@ -15,10 +15,16 @@ struct RestaurantResult: Identifiable, Equatable, Sendable {
     var restaurant: Restaurant
     var distanceKm: Double?
     var slots: [Slot]
+    /// "Vrij" gemeld voor dit dagdeel zonder tijden; zie `DayAvailability.servicesAvailable`.
+    var hasDayLevelAvailability: Bool
     /// Eerstvolgende dag met iets vrij, voor de lege staat. `nil` als er niets volgt.
     var nextAvailableDay: Date?
 
     var id: String { restaurant.id }
+
+    /// Voor sorteren op "meeste beschikbaarheid": echte tijdsloten gaan altijd boven een dag-niveau-melding,
+    /// die weer boven "niets" gaat.
+    var availabilityScore: Int { slots.isEmpty ? (hasDayLevelAvailability ? 1 : 0) : slots.count + 1 }
 }
 
 enum ResultSort: String, CaseIterable, Sendable {
@@ -40,6 +46,7 @@ enum ResultRanking {
                     Distance.kilometers(fromLat: $0.lat, lon: $0.lon, toLat: restaurant.lat, lon: restaurant.lon)
                 },
                 slots: AvailabilityQuery.slots(for: restaurant, matching: query),
+                hasDayLevelAvailability: AvailabilityQuery.hasDayLevelAvailability(for: restaurant, matching: query),
                 nextAvailableDay: AvailabilityQuery.nextAvailableDay(for: restaurant, after: query)
             )
         }
@@ -48,7 +55,7 @@ enum ResultRanking {
             return results.sorted(by: isCloser)
         case .availability:
             return results.sorted { a, b in
-                a.slots.count != b.slots.count ? a.slots.count > b.slots.count : isCloser(a, b)
+                a.availabilityScore != b.availabilityScore ? a.availabilityScore > b.availabilityScore : isCloser(a, b)
             }
         }
     }

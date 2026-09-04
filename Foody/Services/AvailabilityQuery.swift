@@ -32,12 +32,18 @@ enum AvailabilityQuery {
             .sorted { $0.dateTime(on: query.day) < $1.dateTime(on: query.day) }
     }
 
-    /// Eerstvolgende dag ná de gevraagde dag waarop dit restaurant iets heeft voor dit dagdeel en gezelschap.
+    /// Het systeem meldt "vrij" voor dit dagdeel op de gevraagde dag, maar zonder tijden of gezelschapsgrootte.
+    static func hasDayLevelAvailability(for restaurant: Restaurant, matching query: SearchQuery) -> Bool {
+        restaurant.availability.contains { AmsterdamTime.isSameDay($0.date, query.day) && $0.servicesAvailable.contains(query.service) }
+    }
+
+    /// Eerstvolgende dag ná de gevraagde dag waarop dit restaurant iets heeft voor dit dagdeel en gezelschap,
+    /// tijdsloten of een dag-niveau-melding.
     static func nextAvailableDay(for restaurant: Restaurant, after query: SearchQuery) -> Date? {
         let requested = AmsterdamTime.calendar.startOfDay(for: query.day)
         return restaurant.availability
             .filter { $0.date > requested && !AmsterdamTime.isSameDay($0.date, requested) }
-            .filter { !matchingSlots(in: $0, for: query).isEmpty }
+            .filter { !matchingSlots(in: $0, for: query).isEmpty || $0.servicesAvailable.contains(query.service) }
             .map(\.date)
             .min()
     }

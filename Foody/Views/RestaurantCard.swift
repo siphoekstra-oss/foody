@@ -68,6 +68,8 @@ struct AvailabilityRow: View {
         switch result.restaurant.status {
         case .live where !result.slots.isEmpty:
             SlotStrip(restaurant: result.restaurant, slots: result.slots)
+        case .live where result.hasDayLevelAvailability:
+            DayLevelNotice(restaurant: result.restaurant, services: [store.query.service])
         case .live:
             EmptyDayNotice(nextDay: result.nextAvailableDay)
         case .linkOnly:
@@ -127,6 +129,40 @@ struct EmptyDayNotice: View {
                     Text("Ook niets in de komende weken")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+}
+
+/// Het systeem meldt "vrij" voor een dagdeel maar geeft geen tijden (Guestplan op dag-niveau).
+struct DayLevelNotice: View {
+    @Environment(AvailabilityStore.self) private var store
+    @Environment(\.openURL) private var openURL
+    let restaurant: Restaurant
+    let services: [Service]
+
+    private var title: String {
+        switch services {
+        case [.lunch]: return "Vrij in de middag"
+        case [.dinner]: return "Vrij in de avond"
+        default: return "Vrij in de middag en de avond"
+        }
+    }
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "checkmark.circle")
+                .foregroundStyle(.green)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title).font(.subheadline.weight(.medium))
+                Text("Dit reserveersysteem geeft geen tijden door; kies je tijd op de reserveringspagina.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                if let url = BookingLink.url(for: restaurant, day: store.query.day, slot: nil, covers: store.query.covers) {
+                    Button("Naar reserveringspagina") { openURL(url) }
+                        .font(.subheadline)
                 }
             }
         }

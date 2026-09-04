@@ -7,19 +7,35 @@
     "Elk restaurant is gecontroleerd op de eigen website op de datum in verified_at: adres, coördinaten (OpenStreetMap/Nominatim) en reserveersysteem met venue-id.",
     "Geen verzonnen velden: onbekend is null. booking_url en deeplink_template staan er alleen in als ze aantoonbaar werken.",
     "booking_provider komt uit _provider_enum. 'none' betekent alleen telefonisch of per e-mail en levert status link_only op.",
-    "serves_lunch staat op true als de eigen website lunch noemt; het stuurt alleen de nepdata van M0 en de crawler van M2, de app leidt niets af.",
-    "deeplink_template gebruikt {date} = YYYY-MM-DD, {time} = HH:mm, {covers} = aantal personen. Zonder voorvul-ondersteuning is de template gelijk aan booking_url."
+    "deeplink_template gebruikt {date} = YYYY-MM-DD, {time} = HH:mm, {covers} = aantal personen. Zonder voorvul-ondersteuning is de template gelijk aan booking_url.",
+    "provider_venue_id: Zenchef restaurant-id (rid) of de publieke Guestplan access key van de restaurantsite. Guestplan heeft ook provider_account_id (uit /v1/restaurants) en provider_meta.services (dienst-id -> lunch/dinner, afgelezen uit dagdetails) plus detail_days (0 = alleen dag-niveau, één verzoek per maand)."
   ],
-  "_provider_enum": ["zenchef", "formitable", "guestplan", "thefork", "sevenrooms", "resengo", "other", "none"],
+  "_provider_enum": [
+    "zenchef",
+    "formitable",
+    "guestplan",
+    "thefork",
+    "sevenrooms",
+    "resengo",
+    "other",
+    "none"
+  ],
   "region": "den-bosch",
-  "fallback_location": { "lat": 51.6886843, "lon": 5.3036562, "label": "Markt, 's-Hertogenbosch" },
+  "fallback_location": {
+    "lat": 51.6886843,
+    "lon": 5.3036562,
+    "label": "Markt, 's-Hertogenbosch"
+  },
   "restaurants": [
     {
       "id": "tante-pietje",
       "name": "Bistro Tante Pietje",
       "cuisine": "Bistro",
-      "serves_lunch": true,
-      "guides": { "michelin_stars": null, "gaultmillau": null, "bib": null },
+      "guides": {
+        "michelin_stars": null,
+        "gaultmillau": null,
+        "bib": null
+      },
       "price_indication_eur": null,
       "lat": 51.6873245,
       "lon": 5.3059731,
@@ -29,6 +45,21 @@
       "image_url": null,
       "booking_provider": "guestplan",
       "provider_venue_id": "29d156ac26c176a63b590d0a7607efb41f5c9b66",
+      "provider_account_id": 51088,
+      "provider_meta": {
+        "services": {
+          "29639": "lunch",
+          "29665": "lunch",
+          "29664": "dinner",
+          "56802": "dinner",
+          "29661": "dinner",
+          "56801": "dinner",
+          "39853": "dinner",
+          "45516": "dinner",
+          "54292": "dinner"
+        },
+        "detail_days": 0
+      },
       "booking_url": "https://widget.guestplan.com/?i=29d156ac26c176a63b590d0a7607efb41f5c9b66",
       "deeplink_template": "https://widget.guestplan.com/?i=29d156ac26c176a63b590d0a7607efb41f5c9b66&partySize={covers}",
       "verified_at": "2026-09-04",
@@ -38,8 +69,11 @@
       "id": "coco73",
       "name": "CoCo73",
       "cuisine": "Food & drinks",
-      "serves_lunch": true,
-      "guides": { "michelin_stars": null, "gaultmillau": null, "bib": null },
+      "guides": {
+        "michelin_stars": null,
+        "gaultmillau": null,
+        "bib": null
+      },
       "price_indication_eur": null,
       "lat": 51.6876427,
       "lon": 5.3058266,
@@ -49,6 +83,14 @@
       "image_url": null,
       "booking_provider": "guestplan",
       "provider_venue_id": "e83223b980803fea6cfb3f8463c8def6ba2f7515",
+      "provider_account_id": 53496,
+      "provider_meta": {
+        "services": {
+          "38296": "lunch",
+          "38297": "dinner"
+        },
+        "detail_days": 0
+      },
       "booking_url": "https://widget.guestplan.com/?i=e83223b980803fea6cfb3f8463c8def6ba2f7515",
       "deeplink_template": "https://widget.guestplan.com/?i=e83223b980803fea6cfb3f8463c8def6ba2f7515&partySize={covers}",
       "verified_at": "2026-09-04",
@@ -58,8 +100,11 @@
       "id": "brasserie-155",
       "name": "Brasserie 155",
       "cuisine": "Brasserie, Frans",
-      "serves_lunch": true,
-      "guides": { "michelin_stars": null, "gaultmillau": null, "bib": null },
+      "guides": {
+        "michelin_stars": null,
+        "gaultmillau": null,
+        "bib": null
+      },
       "price_indication_eur": null,
       "lat": 51.6561549,
       "lon": 5.2724359,
@@ -78,8 +123,11 @@
       "id": "lseven",
       "name": "L'Seven",
       "cuisine": "Gastronomisch",
-      "serves_lunch": true,
-      "guides": { "michelin_stars": null, "gaultmillau": null, "bib": null },
+      "guides": {
+        "michelin_stars": null,
+        "gaultmillau": null,
+        "bib": null
+      },
       "price_indication_eur": null,
       "lat": 51.5962999,
       "lon": 5.3094264,

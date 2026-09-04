@@ -23,6 +23,10 @@ private struct RestaurantDetailContent: View {
         AvailabilityQuery.slots(for: restaurant, matching: SearchQuery(day: store.query.day, service: service, covers: store.query.covers))
     }
 
+    private var dayLevelServices: [Service] {
+        restaurant.availability.first { AmsterdamTime.isSameDay($0.date, store.query.day) }?.servicesAvailable ?? []
+    }
+
     private var distanceText: String? {
         guard let from = store.userLocation else { return nil }
         let km = Distance.kilometers(fromLat: from.lat, lon: from.lon, toLat: restaurant.lat, lon: restaurant.lon)
@@ -72,7 +76,9 @@ private struct RestaurantDetailContent: View {
         case .live:
             let lunch = slots(.lunch)
             let dinner = slots(.dinner)
-            if lunch.isEmpty && dinner.isEmpty {
+            if lunch.isEmpty && dinner.isEmpty && !dayLevelServices.isEmpty {
+                DayLevelNotice(restaurant: restaurant, services: dayLevelServices)
+            } else if lunch.isEmpty && dinner.isEmpty {
                 EmptyDayNotice(nextDay: AvailabilityQuery.nextAvailableDay(for: restaurant, after: store.query))
             } else {
                 if !lunch.isEmpty { SlotGrid(title: "Middag", restaurant: restaurant, slots: lunch) }
@@ -89,9 +95,7 @@ private struct RestaurantDetailContent: View {
 
     @ViewBuilder
     private var freshnessFooter: some View {
-        if store.isFixtureData {
-            Label("Testdata: deze tijden zijn verzonnen", systemImage: "flask")
-        } else if let checked = restaurant.lastChecked {
+        if let checked = restaurant.lastChecked {
             let stale = Freshness.isStale(checked)
             Label(stale ? "Mogelijk verouderd, gecontroleerd om \(DutchFormat.time(checked))"
                         : "Gecontroleerd om \(DutchFormat.time(checked))",

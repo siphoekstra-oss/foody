@@ -27,18 +27,13 @@ struct ResultsList: View {
     }
 }
 
-/// Altijd zichtbaar boven de lijst: testdata-badge (M0), laatste verversing, locatie-fallback.
+/// Altijd zichtbaar boven de lijst: laatste verversing en locatie-fallback.
 struct DataStatusBar: View {
     @Environment(AvailabilityStore.self) private var store
     @Environment(LocationService.self) private var location
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            if store.isFixtureData {
-                Label("Testdata: de tijdsloten zijn verzonnen", systemImage: "flask")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.orange)
-            }
             if let document = store.document {
                 freshnessLine(generatedAt: document.generatedAt)
             }
@@ -55,8 +50,7 @@ struct DataStatusBar: View {
 
     @ViewBuilder
     private func freshnessLine(generatedAt: Date) -> some View {
-        // Nepdata is per definitie niet vers; daar volstaat de badge hierboven.
-        if store.isStale() && !store.isFixtureData {
+        if store.isStale() {
             Label("Mogelijk verouderd, bijgewerkt \(DutchFormat.time(generatedAt))", systemImage: "clock.badge.exclamationmark")
                 .font(.caption)
                 .foregroundStyle(.orange)

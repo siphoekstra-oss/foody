@@ -1,0 +1,47 @@
+name: crawl
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # elk half uur, UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: crawl
+  cancel-in-progress: false
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Unit tests
+        run: python3 -m unittest discover -s crawler/tests -t crawler
+      - name: Crawl
+        id: crawl
+        run: |
+          mkdir -p public
+          python3 crawler/build.py --out public/availability.json
+      - name: Publiceren (ook bij status unknown, nooit stilzwijgend oude data)
+        if: always() && hashFiles('public/availability.json') != ''
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+  deploy:
+    needs: crawl
+    if: always() && needs.crawl.result != 'cancelled'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
